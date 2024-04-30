@@ -1,5 +1,5 @@
 {
-  "originHash" : "42e6af90e37554c2d99155e43657610e3269a34b70e34611f46bd804dcf26916",
+  "originHash" : "562ca21d925e191df7a22cba9dca721e0678acddaa69ba3693bdefea4d39f144",
   "pins" : [
     {
       "identity" : "sqlite.swift",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/fwcd/swift-music-library.git",
       "state" : {
-        "revision" : "44de5fd56033335ee91f82819061ff425f0ddbad",
-        "version" : "0.1.2"
+        "revision" : "a65e293a50355ad7ca71677accdc7ccee6323a01",
+        "version" : "0.1.6"
       }
     },
     {
