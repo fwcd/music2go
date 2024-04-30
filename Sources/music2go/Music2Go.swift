@@ -17,8 +17,8 @@ struct Music2Go: ParsableCommand {
         var library = try importer.readLibrary(onProgress: handle(progress:))
         print()
 
-        let musicURL = outputURL.appending(components: "Music")
-        try FileManager.default.createDirectory(at: musicURL, withIntermediateDirectories: true)
+        let mediaURL = outputURL.appending(components: "Media")
+        try FileManager.default.createDirectory(at: mediaURL, withIntermediateDirectories: true)
 
         let copier = CopyProcessor { track -> URL? in
             guard let url = track.url else { return nil }
@@ -26,7 +26,7 @@ struct Music2Go: ParsableCommand {
             let title = track.title.map(sanitize)?.nilIfEmpty
             let dirName = artist?.first.map(String.init) ?? "Unknown"
             let fileName = "\([artist, title].compactMap { $0 }.joined(separator: " - ")).\(url.pathExtension)"
-            return musicURL.appending(components: dirName, fileName)
+            return mediaURL.appending(components: dirName, fileName)
         }
         try copier.process(library: &library, onProgress: handle(progress:))
         print()
