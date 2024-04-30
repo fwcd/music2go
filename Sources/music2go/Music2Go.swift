@@ -20,6 +20,7 @@ struct Music2Go: ParsableCommand {
         let musicURL = outputURL.appending(components: "Music")
         try FileManager.default.createDirectory(at: musicURL, withIntermediateDirectories: true)
 
+        // TODO: Sanitize to ASCII
         let copier = CopyProcessor { track -> URL? in
             guard let url = track.url else { return nil }
             let artist = track.artist?.nilIfEmpty?.trimmingCharacters(in: .alphanumerics.inverted).prefix(32)
