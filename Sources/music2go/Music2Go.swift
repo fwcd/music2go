@@ -20,11 +20,10 @@ struct Music2Go: ParsableCommand {
         let musicURL = outputURL.appending(components: "Music")
         try FileManager.default.createDirectory(at: musicURL, withIntermediateDirectories: true)
 
-        // TODO: Sanitize to ASCII
         let copier = CopyProcessor { track -> URL? in
             guard let url = track.url else { return nil }
-            let artist = track.artist?.nilIfEmpty?.trimmingCharacters(in: .alphanumerics.inverted).prefix(32)
-            let title = track.title?.nilIfEmpty?.trimmingCharacters(in: .alphanumerics.inverted).prefix(32)
+            let artist = track.artist.map(sanitize)?.nilIfEmpty
+            let title = track.title.map(sanitize)?.nilIfEmpty
             let dirName = artist?.first.map(String.init) ?? "Unknown"
             let fileName = "\([artist, title].compactMap { $0 }.joined(separator: " - ")).\(url.pathExtension)"
             return musicURL.appending(components: dirName, fileName)
@@ -41,5 +40,20 @@ struct Music2Go: ParsableCommand {
     private func handle(progress: ProgressInfo) {
         print("\u{1b}[2K\r[\(progress.current + 1)\(progress.total.map { "/\($0)" } ?? "")] \(progress.message ?? "")", terminator: "")
         fflush(stdout)
+    }
+
+    private func sanitize(_ s: String) -> String {
+        String(s
+            .replacing("ä", with: "ae")
+            .replacing("ö", with: "oe")
+            .replacing("ü", with: "ue")
+            .replacing("Ä", with: "Ae")
+            .replacing("Ö", with: "Oe")
+            .replacing("Ü", with: "Ue")
+            .replacing("ß", with: "ss")
+            .replacing(#/\s+/#, with: " ")
+            .replacing(#/[^a-zA-Z0-9\.\-&() ]/#, with: "_")
+            .prefix(32)
+        )
     }
 }
