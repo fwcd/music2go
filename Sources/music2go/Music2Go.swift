@@ -14,10 +14,17 @@ struct Music2Go: ParsableCommand {
         try FileManager.default.createDirectory(at: outputURL, withIntermediateDirectories: true)
 
         let importer = try LocalAppleMediaImporter()
-        let library = try importer.readLibrary()
+        let library = try importer.readLibrary(onProgress: handle(progress:))
+        print()
 
         let xmlURL = outputURL.appending(component: "Library.xml")
         let exporter = LibraryXMLExporter(url: xmlURL)
-        try exporter.write(library: library)
+        try exporter.write(library: library, onProgress: handle(progress:))
+        print()
+    }
+
+    private func handle(progress: ProgressInfo) {
+        print("\u{1b}[2K\r[\(progress.current + 1)\(progress.total.map { "/\($0)" } ?? "")] \(progress.message ?? "")", terminator: "")
+        fflush(stdout)
     }
 }
