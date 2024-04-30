@@ -19,6 +19,7 @@ struct Music2Go: ParsableCommand {
 
         let mediaURL = outputURL.appending(components: "Media")
         try FileManager.default.createDirectory(at: mediaURL, withIntermediateDirectories: true)
+        library.mediaFolderLocation = mediaURL.absoluteString
 
         let copier = CopyProcessor { track -> URL? in
             guard let url = track.url else { return nil }
