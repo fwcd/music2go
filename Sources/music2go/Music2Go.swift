@@ -9,6 +9,12 @@ struct Music2Go: ParsableCommand {
     @Option(name: .shortAndLong, help: "The path to the output folder.")
     var output: String
 
+    @Option(name: .shortAndLong, help: "The name of the library file to generate. Determines the output format.")
+    var file: String = "Library.xml"
+
+    @Flag(name: .long, inversion: .prefixedNo, help: "Copy media files to the output folder.")
+    var copy: Bool = true
+
     func run() throws {
         let outputURL = URL(filePath: output)
         try FileManager.default.createDirectory(at: outputURL, withIntermediateDirectories: true)
@@ -17,23 +23,32 @@ struct Music2Go: ParsableCommand {
         var library = try importer.readLibrary(onProgress: handle(progress:))
         print()
 
-        let mediaURL = outputURL.appending(components: "Media")
-        try FileManager.default.createDirectory(at: mediaURL, withIntermediateDirectories: true)
-        library.mediaFolderLocation = mediaURL.absoluteString
+        if copy {
+            let mediaURL = outputURL.appending(components: "Media")
+            try FileManager.default.createDirectory(at: mediaURL, withIntermediateDirectories: true)
+            library.mediaFolderLocation = mediaURL.absoluteString
 
-        let copier = CopyProcessor { track -> URL? in
-            guard let url = track.url else { return nil }
-            let artist = track.artist.map(sanitize)?.nilIfEmpty
-            let title = track.title.map(sanitize)?.nilIfEmpty
-            let dirName = artist?.first.map(String.init) ?? "Unknown"
-            let fileName = "\([artist, title].compactMap { $0 }.joined(separator: " - ")).\(url.pathExtension)"
-            return mediaURL.appending(components: dirName, fileName)
+            let copier = CopyProcessor { track -> URL? in
+                guard let url = track.url else { return nil }
+                let artist = track.artist.map(sanitize)?.nilIfEmpty
+                let title = track.title.map(sanitize)?.nilIfEmpty
+                let dirName = artist?.first.map(String.init) ?? "Unknown"
+                let fileName = "\([artist, title].compactMap { $0 }.joined(separator: " - ")).\(url.pathExtension)"
+                return mediaURL.appending(components: dirName, fileName)
+            }
+            try copier.process(library: &library, onProgress: handle(progress:))
+            print()
         }
-        try copier.process(library: &library, onProgress: handle(progress:))
-        print()
 
-        let xmlURL = outputURL.appending(component: "Library.xml")
-        let exporter = LibraryXMLExporter(url: xmlURL)
+        let fileURL = outputURL.appending(component: file)
+
+        let exporter: any LibraryExporter
+        switch file.split(separator: ".").last! {
+        case "xml": exporter = LibraryXMLExporter(url: fileURL)
+        case "json": exporter = LibraryJSONExporter(url: fileURL)
+        case let fileExt: fatalError("Unrecognized output file extension: \(fileExt)")
+        }
+
         try exporter.write(library: library, onProgress: handle(progress:))
         print()
     }
