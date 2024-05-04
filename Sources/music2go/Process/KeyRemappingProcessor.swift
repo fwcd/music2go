@@ -8,12 +8,21 @@ struct KeyRemappingProcessor: LibraryProcessor {
     let formatter: (Key) -> String
 
     func process(library: inout Library, onProgress: (ProgressInfo) -> Void) throws {
-        library.tracks = library.tracks.mapValues { track in
-            var track = track
-            if let key = track[keyPath: keyField].flatMap(Key.init(rawValue:)) {
-                track[keyPath: keyField] = formatter(key)
-            }
-            return track
+        var progress = ProgressInfo(total: library.tracks.count) {
+            didSet { onProgress(progress) }
         }
+
+        var newTracks: [Int: Track] = [:]
+        for (i, (id, track)) in library.tracks.enumerated() {
+            var track = track
+            if let oldKey = track[keyPath: keyField], let key = Key(rawValue: oldKey) {
+                let newKey = formatter(key)
+                progress.update(current: i, message: "Remapping key \(oldKey) -> \(newKey)...")
+                track[keyPath: keyField] = newKey
+            }
+            newTracks[id] = track
+        }
+
+        library.tracks = newTracks
     }
 }
