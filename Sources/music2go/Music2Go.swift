@@ -15,6 +15,9 @@ struct Music2Go: ParsableCommand {
     @Flag(name: .long, inversion: .prefixedNo, help: "Copy media files to the output folder.")
     var copy: Bool = true
 
+    @Flag(name: .long, help: "Remap keys to mixed Camelot/Traditional notation.")
+    var remapKeys: Bool = true
+
     func run() throws {
         let outputURL = URL(filePath: output)
         try FileManager.default.createDirectory(at: outputURL, withIntermediateDirectories: true)
@@ -22,6 +25,12 @@ struct Music2Go: ParsableCommand {
         let importer = try LocalAppleMediaImporter()
         var library = try importer.readLibrary(onProgress: handle(progress:))
         print()
+
+        if remapKeys {
+            let remapper = KeyRemappingProcessor(keyField: \.grouping, formatter: \.mixed)
+            try remapper.process(library: &library, onProgress: handle(progress:))
+            print()
+        }
 
         if copy {
             let mediaURL = outputURL.appending(components: "Media")
