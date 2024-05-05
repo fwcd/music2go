@@ -15,7 +15,7 @@ struct Music2Go: ParsableCommand {
     @Flag(name: .long, inversion: .prefixedNo, help: "Copy media files to the output folder.")
     var copy: Bool = true
 
-    @Flag(name: .long, help: "Remap keys to mixed Camelot/Traditional notation.")
+    @Flag(name: .long, inversion: .prefixedNo, help: "Remap keys to mixed Camelot/Traditional notation.")
     var remapKeys: Bool = true
 
     func run() throws {
