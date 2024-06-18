@@ -15,6 +15,9 @@ struct Music2Go: ParsableCommand {
     @Flag(name: .long, inversion: .prefixedNo, help: "Copy media files to the output folder.")
     var copy: Bool = true
 
+    @Flag(name: .long, inversion: .prefixedNo, help: "Skip files with matching name and size during copy.")
+    var matchFiles: Bool = true
+
     @Flag(name: .long, inversion: .prefixedNo, help: "Remap keys to mixed Camelot/Traditional notation.")
     var remapKeys: Bool = true
 
@@ -37,7 +40,7 @@ struct Music2Go: ParsableCommand {
             try FileManager.default.createDirectory(at: mediaURL, withIntermediateDirectories: true)
             library.mediaFolderLocation = mediaURL.absoluteString
 
-            let copier = CopyProcessor { track -> URL? in
+            let copier = CopyProcessor(skipPredicate: matchFiles ? .and([.fileExists, .sizeMatches]) : .never) { track -> URL? in
                 guard let url = track.url else { return nil }
                 let artist = track.artist.map(sanitize)?.nilIfEmpty
                 let title = track.title.map(sanitize)?.nilIfEmpty
