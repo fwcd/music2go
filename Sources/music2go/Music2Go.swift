@@ -80,7 +80,7 @@ struct Music2Go: ParsableCommand {
 
         progress.increment(message: "Writing metadata...")
         let metadataEncoder = JSONEncoder()
-        metadataEncoder.outputFormatting = .prettyPrinted
+        metadataEncoder.outputFormatting = [.prettyPrinted, .sortedKeys]
         metadataEncoder.dateEncodingStrategy = .iso8601
         try metadataEncoder.encode(metadata).write(to: metadataFileURL)
     }
