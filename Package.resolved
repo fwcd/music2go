@@ -1,5 +1,5 @@
 {
-  "originHash" : "bab715e9fffb9deb8675a3f85b05003fd496b87d109ebc718189d5725e96ac9b",
+  "originHash" : "4d8d556ce1afa70af0782e4fcd1223fc364024fc8c1161bc29f9666210e182d7",
   "pins" : [
     {
       "identity" : "sqlite.swift",
@@ -24,8 +24,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/fwcd/swift-music-library.git",
       "state" : {
-        "revision" : "b7416da57f857bcf5a881fa9d1ee05ac8dcc7c64",
-        "version" : "1.1.2"
+        "revision" : "b8ba79736048f4cf5a943a6c4b3252526d0cd353",
+        "version" : "1.2.1"
       }
     },
     {
@@ -33,8 +33,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/fwcd/swift-ordered-plist-encoder.git",
       "state" : {
-        "revision" : "056bd9d08ea12aa7daa2b5fdbe4c1dc5c6991493",
-        "version" : "1.0.0"
+        "revision" : "44f13aa020333cb3851c80ba7d147aeb9dff41b3",
+        "version" : "2.0.4"
       }
     }
   ],
