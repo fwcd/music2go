@@ -12,6 +12,9 @@ struct Music2Go: ParsableCommand {
     @Option(name: .shortAndLong, help: "The name of the library file to generate. Determines the output format.")
     var file: String = "Library.xml"
 
+    @Option(name: .shortAndLong, help: "The name of the metadata file to generate. Should be a JSON file.")
+    var metadataFile: String = "Music2Go.json"
+
     @Flag(name: .long, inversion: .prefixedNo, help: "Copy media files to the output folder.")
     var copy: Bool = true
 
@@ -63,6 +66,23 @@ struct Music2Go: ParsableCommand {
 
         try exporter.write(library: library, onProgress: handle(progress:))
         print()
+
+        let metadataFileURL = outputURL.appending(component: metadataFile)
+        try exportMetadata(library: library, fileURL: fileURL, to: metadataFileURL)
+        print()
+    }
+
+    private func exportMetadata(library: Library, fileURL: URL, to metadataFileURL: URL) throws {
+        var progress = ProgressInfo(total: 2)
+        
+        progress.increment(message: "Generating metadata...")
+        let metadata = try Metadata(library: library, exportedFileURL: fileURL)
+
+        progress.increment(message: "Writing metadata...")
+        let metadataEncoder = JSONEncoder()
+        metadataEncoder.outputFormatting = .prettyPrinted
+        metadataEncoder.dateEncodingStrategy = .iso8601
+        try metadataEncoder.encode(metadata).write(to: metadataFileURL)
     }
 
     private func handle(progress: ProgressInfo) {
