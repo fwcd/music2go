@@ -65,7 +65,7 @@ public struct TrackPlaylistFilterProcessor: LibraryProcessor {
         }
 
         func trackPlaylistPaths(separator: String, prefix: [String] = []) -> [Int: Set<String>] {
-            let path = prefix + [name]
+            let path = name.isEmpty ? prefix : prefix + [name]
             let joinedPath = path.joined(separator: separator)
             return children.reduce(into: [Int: Set<String>](uniqueKeysWithValues: Set(tracks.map(\.trackId)).map { ($0, [joinedPath]) })) { acc, child in
                 acc.merge(child.trackPlaylistPaths(separator: separator, prefix: path)) {
