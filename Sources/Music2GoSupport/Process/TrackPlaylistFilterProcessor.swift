@@ -42,18 +42,26 @@ public struct TrackPlaylistFilterProcessor: LibraryProcessor {
         library.tracks = newTracks
     }
 
-    private struct PlaylistNode {
+    struct PlaylistNode: Hashable {
         let name: String
         let children: [PlaylistNode]
         let tracks: [TrackReference]
+
+        init(name: String, children: [PlaylistNode] = [], tracks: [TrackReference] = []) {
+            self.name = name
+            self.children = children
+            self.tracks = tracks
+        }
 
         init(library: Library, persistentId: String? = nil) {
             let playlist = library.playlists.first { $0.persistentId == persistentId }
             let childPlaylists = library.playlists.filter { $0.parentPersistentId == persistentId }
 
-            name = playlist?.name ?? ""
-            children = childPlaylists.map { .init(library: library, persistentId: $0.persistentId) }
-            tracks = playlist?.items ?? []
+            self.init(
+                name: playlist?.name ?? "",
+                children: childPlaylists.map { .init(library: library, persistentId: $0.persistentId) },
+                tracks: playlist?.items ?? []
+            )
         }
 
         func trackPlaylistPaths(separator: String, prefix: [String] = []) -> [Int: Set<String>] {

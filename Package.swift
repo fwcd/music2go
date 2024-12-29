@@ -36,5 +36,11 @@ let package = Package(
                 .product(name: "MusicLibrary", package: "swift-music-library"),
             ]
         ),
+        .testTarget(
+            name: "Music2GoSupportTests",
+            dependencies: [
+                .target(name: "Music2GoSupport")
+            ]
+        ),
     ]
 )
