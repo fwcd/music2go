@@ -3,11 +3,16 @@ import MusicLibrary
 // TODO: Make this more generic, i.e. parse other key formats too
 
 /// Remaps (traditional) keys stored in a track field.
-struct KeyRemappingProcessor: LibraryProcessor {
-    let keyField: WritableKeyPath<Track, String?>
-    let formatter: (Key) -> String
+public struct KeyRemappingProcessor: LibraryProcessor {
+    private let keyField: WritableKeyPath<Track, String?>
+    private let formatter: (Key) -> String
 
-    func process(library: inout Library, onProgress: (ProgressInfo) -> Void) throws {
+    public init(keyField: WritableKeyPath<Track, String?>, formatter: @escaping (Key) -> String) {
+        self.keyField = keyField
+        self.formatter = formatter
+    }
+
+    public func process(library: inout Library, onProgress: (ProgressInfo) -> Void) throws {
         var progress = ProgressInfo(total: library.tracks.count) {
             didSet { onProgress(progress) }
         }

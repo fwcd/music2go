@@ -1,5 +1,5 @@
 extension String {
-    var nilIfEmpty: Self? {
+    public var nilIfEmpty: Self? {
         isEmpty ? nil : self
     }
 }

@@ -1,5 +1,5 @@
 /// A musical key.
-enum Key: String {
+public enum Key: String {
     // Major
     case c = "C"
     case g = "G"
@@ -31,7 +31,7 @@ enum Key: String {
 
 extension Key {
     /// The key in Camelot (aka. Lancelot) notation.
-    var camelot: String {
+    public var camelot: String {
         switch self {
         // Major
         case .c: "8B"
@@ -64,7 +64,7 @@ extension Key {
     }
 
     /// The key in mixed Traditional/Camelot notation.
-    var mixed: String {
+    public var mixed: String {
         "\(camelot) (\(rawValue))"
     }
 }

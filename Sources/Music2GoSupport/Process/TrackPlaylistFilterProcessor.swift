@@ -1,17 +1,23 @@
 import MusicLibrary
 
 /// Handles inclusions and exclusions based on playlist paths.
-struct TrackPlaylistFilterProcessor: LibraryProcessor {
-    let playlistPaths: Set<String>
-    let mode: Mode
-    var separator: String = "/"
+public struct TrackPlaylistFilterProcessor: LibraryProcessor {
+    private let playlistPaths: Set<String>
+    private let mode: Mode
+    private let separator: String
 
-    enum Mode: Hashable {
+    public enum Mode: Hashable {
         case include
         case exclude
     }
 
-    func process(library: inout Library, onProgress: (ProgressInfo) -> Void) throws {
+    public init(playlistPaths: Set<String>, mode: Mode, separator: String = "/") {
+        self.playlistPaths = playlistPaths
+        self.mode = mode
+        self.separator = separator
+    }
+
+    public func process(library: inout Library, onProgress: (ProgressInfo) -> Void) throws {
         var progress = ProgressInfo(total: library.tracks.count) {
             didSet { onProgress(progress) }
         }

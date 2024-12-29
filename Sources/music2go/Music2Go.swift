@@ -1,6 +1,7 @@
 import ArgumentParser
 import Foundation
 import MusicLibrary
+import Music2GoSupport
 
 @main
 struct Music2Go: ParsableCommand {
@@ -13,10 +14,10 @@ struct Music2Go: ParsableCommand {
     var file: String = "Library.xml"
 
     @Option(name: .shortAndLong, help: "A slash-delimited folder path to a playlist to include. May be specified multiple times. If left unspecified, all tracks will be included.")
-    var include: Set<String> = []
+    var include: [String] = []
 
     @Option(name: .shortAndLong, help: "A slash-delimited folder path to a playlist to exclude. May be specified multiple times.")
-    var exclude: Set<String> = []
+    var exclude: [String] = []
 
     @Option(name: .shortAndLong, help: "The name of the metadata file to generate. Should be a JSON file.")
     var metadataFile: String = "Music2Go.json"
@@ -40,7 +41,7 @@ struct Music2Go: ParsableCommand {
 
         for (playlistPaths, mode) in [(include, TrackPlaylistFilterProcessor.Mode.include), (exclude, .exclude)] {
             if !playlistPaths.isEmpty {
-                let filter = TrackPlaylistFilterProcessor(playlistPaths: playlistPaths, mode: mode)
+                let filter = TrackPlaylistFilterProcessor(playlistPaths: Set(playlistPaths), mode: mode)
                 try filter.process(library: &library, onProgress: handle(progress:))
                 print()
             }
