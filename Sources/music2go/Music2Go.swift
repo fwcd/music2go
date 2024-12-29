@@ -12,6 +12,12 @@ struct Music2Go: ParsableCommand {
     @Option(name: .shortAndLong, help: "The name of the library file to generate. Determines the output format.")
     var file: String = "Library.xml"
 
+    @Option(name: .shortAndLong, help: "A slash-delimited folder path to a playlist to include. May be specified multiple times. If left unspecified, all tracks will be included.")
+    var include: Set<String> = []
+
+    @Option(name: .shortAndLong, help: "A slash-delimited folder path to a playlist to exclude. May be specified multiple times.")
+    var exclude: Set<String> = []
+
     @Option(name: .shortAndLong, help: "The name of the metadata file to generate. Should be a JSON file.")
     var metadataFile: String = "Music2Go.json"
 
@@ -31,6 +37,14 @@ struct Music2Go: ParsableCommand {
         let importer = try LocalAppleMediaImporter()
         var library = try importer.readLibrary(onProgress: handle(progress:))
         print()
+
+        for (playlistPaths, mode) in [(include, TrackPlaylistFilterProcessor.Mode.include), (exclude, .exclude)] {
+            if !playlistPaths.isEmpty {
+                let filter = TrackPlaylistFilterProcessor(playlistPaths: playlistPaths, mode: mode)
+                try filter.process(library: &library, onProgress: handle(progress:))
+                print()
+            }
+        }
 
         if remapKeys {
             let remapper = KeyRemappingProcessor(keyField: \.grouping, formatter: \.mixed)
