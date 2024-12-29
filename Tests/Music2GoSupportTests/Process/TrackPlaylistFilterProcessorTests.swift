@@ -3,11 +3,14 @@ import MusicLibrary
 @testable import Music2GoSupport
 
 struct TrackPlaylistFilterProcessorTests {
+    typealias Mode = TrackPlaylistFilterProcessor.Mode
+    typealias PlaylistNode = TrackPlaylistFilterProcessor.PlaylistNode
+
     @Test func playlistTree() {
         let library = makeDemoLibrary()
 
-        let tree = TrackPlaylistFilterProcessor.PlaylistNode(library: library)
-        #expect(tree == TrackPlaylistFilterProcessor.PlaylistNode(
+        let tree = PlaylistNode(library: library)
+        #expect(tree == PlaylistNode(
             name: "",
             children: [
                 .init(name: "A", children: [
@@ -27,6 +30,19 @@ struct TrackPlaylistFilterProcessorTests {
             3: ["A/C/D"],
             4: ["A/B"],
         ])
+    }
+
+    @Test(arguments: [
+        (["A"], .include, [0]),
+        (["A/B", "A/C/D"], .include, [0, 1, 2, 3, 4]),
+        (["A/B", "A/C/D"], .exclude, [5, 6, 7, 8, 9]),
+    ] as [(Set<String>, Mode, Set<Int>)])
+    func processing(playlistPaths: Set<String>, mode: Mode, trackIds: Set<Int>) throws {
+        let processor = TrackPlaylistFilterProcessor(playlistPaths: playlistPaths, mode: mode)
+        var library = makeDemoLibrary()
+        try processor.process(library: &library)
+
+        #expect(Set(library.tracks.keys) == trackIds)
     }
 
     private func makeDemoLibrary() -> Library {
